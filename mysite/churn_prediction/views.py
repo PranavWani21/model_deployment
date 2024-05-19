@@ -41,14 +41,25 @@ def predictData(request):
 
 
     if Country==0:
-        predict=__model.predict([[1,0,0,scaled_df['remainder__CreditScore'][0],gender,scaled_df['remainder__Age'][0],scaled_df['remainder__Tenure'][0], scaled_df['remainder__Balance'][0],  scaled_df['remainder__NumOfProducts'][0],  HasCrCard,IsActiveMember,scaled_df['remainder__EstimatedSalary'][0]   ]])
+        predict=__model.predict_proba([[1,0,0,scaled_df['remainder__CreditScore'][0],gender,scaled_df['remainder__Age'][0],scaled_df['remainder__Tenure'][0], scaled_df['remainder__Balance'][0],  scaled_df['remainder__NumOfProducts'][0],  HasCrCard,IsActiveMember,scaled_df['remainder__EstimatedSalary'][0]   ]])
     if Country==1:
-        predict=__model.predict([[0,1,0,  scaled_df['remainder__CreditScore'][0],gender,scaled_df['remainder__Age'][0],scaled_df['remainder__Tenure'][0], scaled_df['remainder__Balance'][0],  scaled_df['remainder__NumOfProducts'][0],  HasCrCard,IsActiveMember,scaled_df['remainder__EstimatedSalary'][0] ]])
+        predict=__model.predict_proba([[0,1,0,  scaled_df['remainder__CreditScore'][0],gender,scaled_df['remainder__Age'][0],scaled_df['remainder__Tenure'][0], scaled_df['remainder__Balance'][0],  scaled_df['remainder__NumOfProducts'][0],  HasCrCard,IsActiveMember,scaled_df['remainder__EstimatedSalary'][0] ]])
     else:
-        predict=__model.predict([[0,0,1,  scaled_df['remainder__CreditScore'][0],gender,scaled_df['remainder__Age'][0],scaled_df['remainder__Tenure'][0], scaled_df['remainder__Balance'][0],  scaled_df['remainder__NumOfProducts'][0],  HasCrCard,IsActiveMember,scaled_df['remainder__EstimatedSalary'][0] ]])
+        predict=__model.predict_proba([[0,0,1,  scaled_df['remainder__CreditScore'][0],gender,scaled_df['remainder__Age'][0],scaled_df['remainder__Tenure'][0], scaled_df['remainder__Balance'][0],  scaled_df['remainder__NumOfProducts'][0],  HasCrCard,IsActiveMember,scaled_df['remainder__EstimatedSalary'][0] ]])
 
+    predict=predict[0]
+    no_churn_probability = predict[0] * 100
+    churn_probability = predict[1] * 100
     print(predict)
-    return render(request,"index.html",{"prediction":predict, 'con':Country, 'cs':c_score, 'gen':gender, 'aayu':age, 'yr':tenure, 'bal':balance,  'nop':numofproducts,   'hcc':HasCrCard, 'iam':IsActiveMember,  'es':EstimatedSalary})
+
+    prediction_ = {
+            'no_churn_probability': round(no_churn_probability,3),
+            'churn_probability': round(churn_probability,3)
+        }
+    
+    print(prediction_['no_churn_probability'])
+    print(prediction_['churn_probability'])
+    return render(request,"index.html",{"prediction":prediction_, 'con':Country, 'cs':c_score, 'gen':gender, 'aayu':age, 'yr':tenure, 'bal':balance,  'nop':numofproducts,   'hcc':HasCrCard, 'iam':IsActiveMember,  'es':EstimatedSalary})
 
 
 def create_df(Country,c_score,gender,age,tenure,balance,numofproducts,HasCrCard,IsActiveMember,EstimatedSalary):
