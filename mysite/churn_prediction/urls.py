@@ -19,6 +19,6 @@ from django.urls import path,include
 from .import views 
 
 urlpatterns = [
-    path('',views.index),  
-    path('predictData',views.predictData)
+    path('',views.index, name='index'),  
+    path('predictData',views.predictData, name='predictData')
 ]
